@@ -10,6 +10,8 @@ import DarkModeToggle from '@/components/ui/DarkModeToggle'; // Adjust path
 interface MobileMenuProps {
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  isAnimating: boolean;
+  setIsAnimating: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 // Define origin based on expected icon position (adjust as needed)
@@ -25,7 +27,7 @@ const popoverVariants = {
       // Overall exit duration
       duration: 0.5, // Match enter duration for symmetry
       // Use separate transitions for properties if needed
-      opacity: { duration: 0.3, ease: "linear", delay: 0.2 }, // Fade out towards the end
+      opacity: { duration: 0.5, ease: "linear", delay: 0.2 }, // Fade out towards the end
       clipPath: { duration: 0.5, ease: "easeIn" }, // EaseIn for closing feels natural
       // Control children exit timing
       when: "beforeChildren", // Let items finish animating out first
@@ -57,17 +59,41 @@ const popoverVariants = {
 // Using a default transition for simplicity, can override per variant if needed
 const defaultItemTransition = { type: 'spring', damping: 15, stiffness: 100 };
 const menuItemVariants = [
-    { hidden: { opacity: 0, x: -30 }, visible: { opacity: 1, x: 0, transition: defaultItemTransition } },
-    { hidden: { opacity: 0, y: 30 }, visible: { opacity: 1, y: 0, transition: defaultItemTransition } },
-    { hidden: { opacity: 0, scale: 0.8 }, visible: { opacity: 1, scale: 1, transition: defaultItemTransition } },
-    { hidden: { opacity: 0, rotate: -10, x: -20 }, visible: { opacity: 1, rotate: 0, x: 0, transition: defaultItemTransition } },
-    { hidden: { opacity: 0, y: -30 }, visible: { opacity: 1, y: 0, transition: defaultItemTransition } },
-    { hidden: { opacity: 0, x: 30 }, visible: { opacity: 1, x: 0, transition: defaultItemTransition } },
+  { hidden: { opacity: 0, x: -30 }, visible: { opacity: 1, x: 0, transition: defaultItemTransition } },
+  { hidden: { opacity: 0, y: 30 }, visible: { opacity: 1, y: 0, transition: defaultItemTransition } },
+  { hidden: { opacity: 0, scale: 0.8 }, visible: { opacity: 1, scale: 1, transition: defaultItemTransition } },
+  { hidden: { opacity: 0, rotate: -10, x: -20 }, visible: { opacity: 1, rotate: 0, x: 0, transition: defaultItemTransition } },
+  { hidden: { opacity: 0, y: -30 }, visible: { opacity: 1, y: 0, transition: defaultItemTransition } },
+  { hidden: { opacity: 0, x: 30 }, visible: { opacity: 1, x: 0, transition: defaultItemTransition } },
 ];
 
-const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, setIsOpen }) => {
+const MobileMenu: React.FC<MobileMenuProps> = ({
+  isOpen,
+  setIsOpen,
+  isAnimating,
+  setIsAnimating
+}) => {
   const closeMenu = () => setIsOpen(false);
   const [dimensions, setDimensions] = React.useState({ width: 0, height: 0 });
+  // Handler to close, prevents closing if animating
+  const handleCloseMenu = () => {
+    if (!isAnimating) {
+      setIsOpen(false);
+    }
+  };
+  // Animation lifecycle handlers
+  const onAnimStart = () => {
+    // console.log("Animation Start"); // Optional debug
+    setIsAnimating(true);
+  };
+  const onAnimComplete = () => {
+    // console.log("Animation Complete"); // Optional debug
+    setIsAnimating(false);
+    // Ensure state matches final animation state if needed (e.g., fully closed)
+    // Although AnimatePresence handles removal, this can be a safety net
+    // if (!isOpen) { /* potentially cleanup */ }
+  };
+
 
   // Get window dimensions for circle animation
   React.useEffect(() => {
@@ -94,61 +120,66 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, setIsOpen }) => {
 
   return (
     // AnimatePresence wraps the conditional rendering of the popover
-    <AnimatePresence custom={dimensions} mode='wait'> {/* mode='wait' ensures exit anim completes first */}
-        {isOpen && (
-          <motion.div
-            key="mobile-menu-popover"
-            custom={dimensions}
-            variants={popoverVariants}
-            initial="hidden"
-            animate="visible"
-            exit="hidden"
-            className="fixed inset-0 z-40 h-[100dvh] w-screen bg-white/90 dark:bg-black/90 backdrop-blur-md"
+    <AnimatePresence custom={dimensions} mode='wait' onExitComplete={() => setIsAnimating(false)}> {/* mode='wait' ensures exit anim completes first. onExitComplete on AnimatePresence can also signal end, but applying to the element is often clearer */}
+      {isOpen && (
+        <motion.div
+          key="mobile-menu-popover"
+          custom={dimensions}
+          variants={popoverVariants}
+          initial="hidden"
+          animate="visible"
+          exit="hidden"
+          className="fixed inset-0 z-40 h-[100dvh] w-screen bg-white/90 dark:bg-black/90 backdrop-blur-md"
+          onAnimationStart={onAnimStart}
+          onAnimationComplete={onAnimComplete}
+        >
+          {/* Close Button */}
+          <motion.button
+            className={`absolute top-4 right-4 z-50 p-2 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-200/50 dark:hover:bg-gray-800/50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500 ${isAnimating ? 'cursor-not-allowed' : ''}`} // <<< Style when disabled
+            onClick={handleCloseMenu} // <<< Use handler
+            disabled={isAnimating}   // <<< Disable button
+            aria-label="Close menu"
+            initial={{ opacity: 0, rotate: -90, scale: 0.5 }}
+            animate={{ opacity: isAnimating ? 0.1 : 1, rotate: 0, scale: 1, transition: { delay: 0.2 } }} // Delay here is fine
+            exit={{ opacity: 0, rotate: -90, scale: 0.5 }}
+            whileTap={{ scale: 0.9 }}
+            whileHover={{ scale: 1.1, rotate: -10 }}
           >
-            {/* Close Button */}
-            <motion.button
-              className="absolute top-4 right-4 z-50 p-2 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-200/50 dark:hover:bg-gray-800/50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
-              onClick={closeMenu} aria-label="Close menu"
-              initial={{ opacity: 0, rotate: -90, scale: 0.5 }}
-              animate={{ opacity: 1, rotate: 0, scale: 1, transition: { delay: 0.2 } }} // Delay here is fine
-              exit={{ opacity: 0, rotate: -90, scale: 0.5 }}
-              whileTap={{ scale: 0.9 }} whileHover={{ scale: 1.1, rotate: -10 }}
-            >
-              <X className="h-6 w-6" />
-            </motion.button>
+            <X className="h-6 w-6" />
+          </motion.button>
 
-            {/* Menu Items & Toggle Container */}
-            {/* Wrap item list in its own motion.div for potential parent stagger */}
-            <motion.div
-              className="flex flex-col items-center justify-center h-full pt-10 pb-20 space-y-6"
-              // Variants applied to children below
-            >
-              {menuItems.map((item, index) => (
-                            <motion.div
-                                key={item.name}
-                                variants={menuItemVariants[index % menuItemVariants.length]}
-                                // Rely on variants' defined transitions + parent stagger
-                                className="overflow-hidden"
-                            >
-                                <Link
-                                    href={item.href} onClick={closeMenu}
-                                    className="block px-4 py-2 rounded-md text-2xl font-semibold text-gray-800 dark:text-gray-200 hover:bg-indigo-100/50 dark:hover:bg-indigo-900/30 transition-colors duration-200 transform hover:scale-105"
-                                >
-                                    {item.name}
-                                </Link>
-                            </motion.div>
-                        ))}
-                        {/* Dark mode toggle */}
-                        <motion.div
-                            variants={menuItemVariants[menuItems.length % menuItemVariants.length]}
-                            className="mt-8 pt-4 border-t border-gray-300/50 dark:border-gray-700/50 w-1/2 flex justify-center"
-                        >
-                  <DarkModeToggle />
+          {/* Menu Items & Toggle Container */}
+          {/* Wrap item list in its own motion.div for potential parent stagger */}
+          <motion.div
+            className="flex flex-col items-center justify-center h-full pt-10 pb-20 space-y-6"
+          // Variants applied to children below
+          >
+            {menuItems.map((item, index) => (
+              <motion.div
+                key={item.name}
+                variants={menuItemVariants[index % menuItemVariants.length]}
+                // Rely on variants' defined transitions + parent stagger
+                className="overflow-hidden"
+              >
+                <Link
+                  href={item.href} onClick={closeMenu}
+                  className="block px-4 py-2 rounded-md text-2xl font-semibold text-gray-800 dark:text-gray-200 hover:bg-indigo-100/50 dark:hover:bg-indigo-900/30 transition-colors duration-200 transform hover:scale-105"
+                >
+                  {item.name}
+                </Link>
               </motion.div>
-            </motion.div> {/* End Menu Items Container */}
-          </motion.div> // End Popover
-        )}
-      </AnimatePresence>
+            ))}
+            {/* Dark mode toggle */}
+            <motion.div
+              variants={menuItemVariants[menuItems.length % menuItemVariants.length]}
+              className="mt-8 pt-4 border-t border-gray-300/50 dark:border-gray-700/50 w-1/2 flex justify-center"
+            >
+              <DarkModeToggle />
+            </motion.div>
+          </motion.div> {/* End Menu Items Container */}
+        </motion.div> // End Popover
+      )}
+    </AnimatePresence>
   );
 };
 
