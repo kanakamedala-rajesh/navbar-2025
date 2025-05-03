@@ -1,12 +1,12 @@
-// components/layout/NavBar.tsx
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { motion, useScroll, useMotionValueEvent } from 'framer-motion';
+import { motion, useScroll, useMotionValueEvent, AnimatePresence } from 'framer-motion';
 import Logo from '@/components/ui/Logo'; // Adjust path
 import DarkModeToggle from '@/components/ui/DarkModeToggle'; // Adjust path
 import DesktopMenu from './DesktopMenu'; // Adjust path
 import MobileMenu from './MobileMenu'; // Adjust path
+import { Menu as MenuIcon } from 'lucide-react'; // Import MenuIcon here
 
 const NavBar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -38,44 +38,81 @@ const NavBar = () => {
     }
   });
 
+  // Close mobile menu if window resizes to desktop width
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 768 && isMobileMenuOpen) { // 768px is Tailwind's default 'md' breakpoint
+        setIsMobileMenuOpen(false);
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [isMobileMenuOpen]);
 
   return (
-    <motion.header
-      variants={{
-        visible: { y: 0, opacity: 1 },
-        hidden: { y: "-110%", opacity: 0 }, // Move further up and fade
-      }}
-      animate={isHidden ? "hidden" : "visible"}
-      transition={{ duration: 0.4, ease: "easeInOut" }} // Slightly slower, smoother ease
-      className={`fixed top-0 left-0 right-0 z-30 transition-all duration-300 ease-in-out
-                 ${isScrolled
-                   ? 'shadow-lg bg-white/80 dark:bg-gray-950/80 backdrop-blur-lg border-b border-gray-200/50 dark:border-white/10' // Enhanced glassy effect
-                   : 'bg-transparent border-b border-transparent' // Fully transparent at top
-                 }`}
-    >
-      {/* Optional: Add a subtle top gradient shadow when scrolled */}
-       <div className={`absolute inset-x-0 top-full h-8 bg-gradient-to-b from-black/5 to-transparent pointer-events-none transition-opacity duration-300 ${isScrolled ? 'opacity-100' : 'opacity-0'}`} />
+    <> {/* Use Fragment to contain NavBar and MobileMenu which needs AnimatePresence */}
+      <motion.header
+        // Header animation (scroll hide/show)
+        variants={{
+          visible: { y: 0, opacity: 1 },
+          hidden: { y: "-110%", opacity: 0 },
+        }}
+        animate={isHidden ? "hidden" : "visible"}
+        transition={{ duration: 0.4, ease: "easeInOut" }}
+        className={`fixed top-0 left-0 right-0 z-30 transition-all duration-300 ease-in-out
+                   ${isScrolled
+                     ? 'shadow-lg bg-white/80 dark:bg-gray-950/80 backdrop-blur-lg border-b border-gray-200/50 dark:border-white/10'
+                     : 'bg-transparent border-b border-transparent'
+                   }`}
+      >
+         {/* Optional gradient shadow */}
+         <div className={`absolute inset-x-0 top-full h-8 bg-gradient-to-b from-black/5 to-transparent pointer-events-none transition-opacity duration-300 ${isScrolled ? 'opacity-100' : 'opacity-0'}`} />
 
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16 md:h-20"> {/* Consistent height */}
-          {/* Logo */}
-          <Logo />
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16 md:h-20">
+            {/* Logo */}
+            <Logo />
 
-          {/* Desktop Menu & Dark Mode (Center Right) */}
-          <div className="hidden md:flex items-center space-x-6">
-             <DesktopMenu />
-             <DarkModeToggle />
-          </div>
+            {/* Desktop Menu & Dark Mode (Center Right) */}
+            <div className="hidden md:flex items-center space-x-6">
+               <DesktopMenu />
+               <DarkModeToggle />
+            </div>
 
-          {/* Mobile Menu Trigger & Dark Mode (Right) */}
-          <div className="flex md:hidden items-center space-x-4">
-             {/* Keep dark mode toggle visible on mobile nav bar itself */}
-             <DarkModeToggle />
-             <MobileMenu isOpen={isMobileMenuOpen} setIsOpen={setIsMobileMenuOpen} />
-          </div>
-        </div>
-      </div>
-    </motion.header>
+            {/* --- Mobile Section (Right) --- */}
+            <div className="flex md:hidden items-center space-x-4">
+               {/* Dark Mode Toggle always visible on mobile header */}
+               <DarkModeToggle />
+
+               {/* --- Hamburger Icon - Animated --- */}
+               <AnimatePresence initial={false}> {/* initial=false prevents animation on initial load */}
+                 {!isMobileMenuOpen && ( // Only show if menu is NOT open
+                   <motion.button
+                     key="hamburger-button"
+                     className="relative z-50 p-2 -mr-2 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-200/50 dark:hover:bg-gray-800/50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
+                     onClick={() => setIsMobileMenuOpen(true)}
+                     aria-label="Open menu"
+                     initial={{ opacity: 0, scale: 0.5, rotate: -90 }}
+                     animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                     exit={{ opacity: 0, scale: 0.5, rotate: -90 }}
+                     transition={{ duration: 0.2, ease: "easeOut" }}
+                     whileTap={{ scale: 0.9 }}
+                     whileHover={{ scale: 1.1 }}
+                   >
+                     <MenuIcon className="h-6 w-6" />
+                   </motion.button>
+                 )}
+               </AnimatePresence>
+            </div> {/* End Mobile Section */}
+
+          </div> {/* End Flex Container */}
+        </div> {/* End Container */}
+      </motion.header>
+
+      {/* --- Mobile Menu Popover Component --- */}
+      {/* Pass state down. AnimatePresence is handled INSIDE MobileMenu now */}
+      <MobileMenu isOpen={isMobileMenuOpen} setIsOpen={setIsMobileMenuOpen} />
+    </>
   );
 };
 

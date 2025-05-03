@@ -1,4 +1,3 @@
-// app/layout.tsx
 import type { Metadata } from "next";
 import { Inter } from "next/font/google"; // Or your chosen font
 import "./globals.css";
@@ -29,7 +28,7 @@ export default function RootLayout({
         >
           <Header />
           {/* Adjust pt-20 based on your final NavBar height */}
-          <main className="pt-20 min-h-screen"> {/* Added min-h-screen for better footer placement */}
+          <main className="pt-20 md:pt-24 min-h-screen"> {/* Added min-h-screen for better footer placement */}
              {children}
           </main>
           <Footer />

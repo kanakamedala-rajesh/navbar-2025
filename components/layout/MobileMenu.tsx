@@ -1,4 +1,3 @@
-// components/layout/MobileMenu.tsx
 "use client";
 
 import * as React from 'react';
@@ -25,7 +24,7 @@ const popoverVariants = {
       type: 'spring',
       stiffness: 400,
       damping: 40,
-      staggerChildren: 0.05,
+      staggerChildren: 0.05, // Stagger items closing
       staggerDirection: -1,
       when: "afterChildren",
     },
@@ -35,11 +34,10 @@ const popoverVariants = {
     opacity: 1,
     transition: {
       type: 'spring',
-      stiffness: 80,
+      stiffness: 90,
       damping: 15,
       restDelta: 0.001,
-      staggerChildren: 0.08, // Slightly slower stagger
-      delayChildren: 0.2,
+      staggerChildren: 0.07, // Slightly slower stagger
       when: "beforeChildren",
     },
   }),
@@ -84,28 +82,18 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, setIsOpen }) => {
 
   return (
     <>
-      {/* Hamburger Trigger */}
-      <motion.button
-        className="md:hidden z-50 p-2 -mr-2 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-200/50 dark:hover:bg-gray-800/50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
-        onClick={() => setIsOpen(true)}
-        aria-label="Open menu"
-        whileTap={{ scale: 0.9 }}
-        whileHover={{ scale: 1.1 }}
-      >
-        <MenuIcon className="h-6 w-6" />
-      </motion.button>
-
+      {/* Hamburger Trigger is now handled with AnimatePresence in NavBar.tsx */}
       {/* Popover Menu */}
       <AnimatePresence custom={dimensions}>
         {isOpen && (
           <motion.div
-            key="mobile-menu"
+            key="mobile-menu-popover" // Changed key slightly for clarity
             custom={dimensions}
             variants={popoverVariants}
             initial="hidden"
             animate="visible"
             exit="hidden"
-            className="fixed inset-0 z-40 h-[100dvh] w-screen bg-white/90 dark:bg-black/90 backdrop-blur-md" // Use dynamic viewport height
+            className="fixed inset-0 z-40 h-[100dvh] w-screen bg-white/90 dark:bg-black/90 backdrop-blur-md"
           >
             {/* Close Button */}
             <motion.button
@@ -113,7 +101,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, setIsOpen }) => {
               onClick={closeMenu}
               aria-label="Close menu"
               initial={{ opacity: 0, rotate: -90, scale: 0.5 }}
-              animate={{ opacity: 1, rotate: 0, scale: 1, transition: { delay: 0.3 } }}
+              animate={{ opacity: 1, rotate: 0, scale: 1, transition: { delay: 0.2 } }} // Slight delay for X button is ok
               exit={{ opacity: 0, rotate: -90, scale: 0.5 }}
               whileTap={{ scale: 0.9 }}
               whileHover={{ scale: 1.1, rotate: -10 }}
@@ -124,28 +112,26 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, setIsOpen }) => {
             {/* Menu Items & Toggle */}
             <motion.div className="flex flex-col items-center justify-center h-full pt-10 pb-20 space-y-6">
               {menuItems.map((item, index) => (
-                // Apply a different animation variant cyclically
                 <motion.div
                   key={item.name}
-                  custom={index} // Can be used for custom transition logic if needed
+                  custom={index}
                   variants={menuItemVariants[index % menuItemVariants.length]}
                   transition={{ type: 'spring', damping: 15, stiffness: 100 }}
-                  className="overflow-hidden" // Might prevent layout shifts during animation
+                  className="overflow-hidden"
                  >
                   <Link
                     href={item.href}
-                    onClick={closeMenu} // Close menu on item click
-                    className="block px-4 py-2 rounded-md text-2xl font-semibold text-gray-800 dark:text-gray-200 hover:bg-indigo-100/50 dark:hover:bg-indigo-900/30 transition-colors duration-200 transform hover:scale-105" // Added scale on hover
+                    onClick={closeMenu}
+                    className="block px-4 py-2 rounded-md text-2xl font-semibold text-gray-800 dark:text-gray-200 hover:bg-indigo-100/50 dark:hover:bg-indigo-900/30 transition-colors duration-200 transform hover:scale-105"
                   >
                     {item.name}
                   </Link>
                 </motion.div>
               ))}
               <motion.div
-                 // Use one of the variants, e.g., the last one or a specific one
                  variants={menuItemVariants[menuItems.length % menuItemVariants.length]}
                  transition={{ type: 'spring', damping: 15, stiffness: 100 }}
-                 className="mt-8 pt-4 border-t border-gray-300/50 dark:border-gray-700/50 w-1/2 flex justify-center" // Separator and alignment
+                 className="mt-8 pt-4 border-t border-gray-300/50 dark:border-gray-700/50 w-1/2 flex justify-center"
                >
                   <DarkModeToggle />
               </motion.div>
