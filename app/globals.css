@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 /* 
   Inject Tailwind's base styles. 
   Note: In v4, this might change slightly, potentially integrating 
