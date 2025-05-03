@@ -1,0 +1,111 @@
+@import "tailwindcss";
+
+/* 
+  Inject Tailwind's base styles. 
+  Note: In v4, this might change slightly, potentially integrating 
+  preflight differently, but the concept remains.
+*/
+@tailwind base;
+
+/* 
+  Inject Tailwind's component classes and any custom component classes.
+*/
+@tailwind components;
+
+/*
+  =====================================================
+  Tailwind v4 @theme directive for theme customization
+  =====================================================
+  Define custom theme values using CSS variables.
+  This replaces the 'theme.extend' section for these specific values 
+  from tailwind.config.js in v3.
+*/
+@theme {
+  /* Custom animation definitions */
+  --animation: {
+    /* Corresponds to theme.extend.animation in v3 */
+    "accordion-down": "accordion-down 0.2s ease-out",
+    "accordion-up": "accordion-up 0.2s ease-out",
+     /* Add any other custom animations here */
+  };
+
+  /* Custom backdrop blur values */
+  --backdrop-blur: {
+    /* Corresponds to theme.extend.backdropBlur in v3 */
+    xs: '2px',
+    sm: '4px',
+    md: '8px',
+    lg: '12px', /* Using the values from my previous example */
+    xl: '16px',
+    '2xl': '24px',
+    /* Add any other custom blurs here */
+  };
+
+  /* Example: Customizing Container Padding (replaces theme.container.padding) */
+  /* The .container class itself would likely still apply centering/max-width */
+  /* based on screen sizes defined elsewhere or default */
+  --padding: {
+     /* Default padding for the container might be set like this */
+     /* This is just an example, syntax might vary slightly */
+     DEFAULT: '1rem', 
+     /* You could potentially define screen-specific padding vars too */
+     /* sm: '2rem', */
+     /* lg: '4rem', */
+  };
+
+   /* Example: Defining screens (corresponds to theme.screens) */
+   /* This affects media queries for responsive utilities like md:flex */
+   --screens: {
+      sm: '640px',
+      md: '768px',
+      lg: '1024px',
+      xl: '1280px',
+      '2xl': '1536px',
+   }
+
+  /* You would add other theme sections here as needed */
+  /* 
+  --color: { ... };
+  --spacing: { ... };
+  --font-family: { ... };
+  etc.
+  */
+}
+
+
+/* 
+  =====================================================
+  Standard CSS Keyframes 
+  =====================================================
+  These are just regular CSS, not part of @theme.
+  They correspond to theme.extend.keyframes in v3.
+*/
+@keyframes accordion-down {
+  from { height: 0; opacity: 0; }
+  to { height: var(--radix-accordion-content-height); opacity: 1; } /* Example using Radix variable */
+}
+
+@keyframes accordion-up {
+  from { height: var(--radix-accordion-content-height); opacity: 1; } /* Example using Radix variable */
+  to { height: 0; opacity: 0; }
+}
+
+
+/* 
+  =====================================================
+  Global Base Styles (Optional but common)
+  =====================================================
+  Apply styles after @tailwind base but before components/utilities.
+*/
+body {
+  @apply bg-gray-50 dark:bg-gray-950 transition-colors duration-300;
+  @apply text-gray-900 dark:text-gray-100; /* Sensible default text colors */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+
+/* 
+  Inject Tailwind's utility classes AFTER @theme definitions.
+*/
+@tailwind utilities;
