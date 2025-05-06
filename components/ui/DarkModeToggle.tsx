@@ -1,10 +1,10 @@
 // components/ui/DarkModeToggle.tsx
-"use client";
+'use client';
 
-import * as React from "react";
-import { Moon, Sun } from "lucide-react";
-import { useTheme } from "next-themes";
-import { motion, AnimatePresence } from "framer-motion";
+import * as React from 'react';
+import { Moon, Sun } from 'lucide-react';
+import { useTheme } from 'next-themes';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const DarkModeToggle = () => {
   const { setTheme, resolvedTheme } = useTheme();
@@ -13,7 +13,7 @@ const DarkModeToggle = () => {
   React.useEffect(() => setMounted(true), []);
 
   const toggleTheme = () => {
-    setTheme(resolvedTheme === "dark" ? "light" : "dark");
+    setTheme(resolvedTheme === 'dark' ? 'light' : 'dark');
   };
 
   // Avoid rendering mismatch by waiting for mount
@@ -31,13 +31,13 @@ const DarkModeToggle = () => {
       whileTap={{ scale: 0.95, rotate: -5 }} // Added subtle rotate on tap
     >
       <AnimatePresence mode="wait" initial={false}>
-        {resolvedTheme === "dark" ? (
+        {resolvedTheme === 'dark' ? (
           <motion.div
             key="moon"
             initial={{ y: -20, opacity: 0, rotate: -90 }}
             animate={{ y: 0, opacity: 1, rotate: 0 }}
             exit={{ y: 20, opacity: 0, rotate: 90 }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
+            transition={{ duration: 0.3, ease: 'easeInOut' }}
             className="text-indigo-400" // Color the icon
           >
             <Moon className="w-5 h-5" />
@@ -48,7 +48,7 @@ const DarkModeToggle = () => {
             initial={{ y: -20, opacity: 0, rotate: 90 }}
             animate={{ y: 0, opacity: 1, rotate: 0 }}
             exit={{ y: 20, opacity: 0, rotate: -90 }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
+            transition={{ duration: 0.3, ease: 'easeInOut' }}
             className="text-yellow-500" // Color the icon
           >
             <Sun className="w-5 h-5" />

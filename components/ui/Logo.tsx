@@ -10,7 +10,9 @@ const playfair = Playfair_Display({
 
 const Logo = () => {
   return (
-    <Link href="/" className="z-10 flex-shrink-0"> {/* Added flex-shrink-0 */}
+    <Link href="/" className="z-10 flex-shrink-0">
+      {' '}
+      {/* Added flex-shrink-0 */}
       <span
         className={`
           text-3xl font-bold text-gray-900 dark:text-gray-100

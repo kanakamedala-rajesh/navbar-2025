@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import React, { useState, useEffect } from 'react';
 import { motion, useScroll, useMotionValueEvent, AnimatePresence } from 'framer-motion';
@@ -24,11 +24,11 @@ const NavBar = () => {
   };
 
   // Scroll detection for showing/hiding NavBar and changing background
-  useMotionValueEvent(scrollY, "change", (latest) => {
+  useMotionValueEvent(scrollY, 'change', (latest) => {
     const previous = scrollY.getPrevious() ?? 0;
     const diff = latest - previous;
     const scrollThreshold = 80; // Pixels scrolled before changing state
-    const hideThreshold = 10;   // Sensitivity for hiding/showing on scroll direction change
+    const hideThreshold = 10; // Sensitivity for hiding/showing on scroll direction change
 
     // Add background/shadow when scrolled past a certain point
     if (latest > scrollThreshold) {
@@ -49,7 +49,8 @@ const NavBar = () => {
   // Close mobile menu if window resizes to desktop width
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth >= 768 && isMobileMenuOpen) { // 768px is Tailwind's default 'md' breakpoint
+      if (window.innerWidth >= 768 && isMobileMenuOpen) {
+        // 768px is Tailwind's default 'md' breakpoint
         setIsMobileMenuOpen(false);
       }
     };
@@ -58,53 +59,61 @@ const NavBar = () => {
   }, [isMobileMenuOpen]);
 
   return (
-    <> {/* Use Fragment to contain NavBar and MobileMenu which needs AnimatePresence */}
+    <>
+      {' '}
+      {/* Use Fragment to contain NavBar and MobileMenu which needs AnimatePresence */}
       <motion.header
         // Header animation (scroll hide/show)
         variants={{
           visible: { y: 0, opacity: 1 },
-          hidden: { y: "-110%", opacity: 0 },
+          hidden: { y: '-110%', opacity: 0 },
         }}
-        animate={isHidden ? "hidden" : "visible"}
-        transition={{ duration: 0.4, ease: "easeInOut" }}
+        animate={isHidden ? 'hidden' : 'visible'}
+        transition={{ duration: 0.4, ease: 'easeInOut' }}
         className={`fixed top-0 left-0 right-0 z-30 transition-all duration-300 ease-in-out
-                   ${isScrolled
-            ? 'shadow-lg bg-white/80 dark:bg-gray-950/80 backdrop-blur-lg border-b border-gray-200/50 dark:border-white/10'
-            : 'bg-transparent border-b border-transparent'
-          }`}
+                   ${
+                     isScrolled
+                       ? 'shadow-lg bg-white/80 dark:bg-gray-950/80 backdrop-blur-lg border-b border-gray-200/50 dark:border-white/10'
+                       : 'bg-transparent border-b border-transparent'
+                   }`}
       >
         {/* Optional gradient shadow */}
-        <div className={`absolute inset-x-0 top-full h-8 bg-gradient-to-b from-black/5 to-transparent pointer-events-none transition-opacity duration-300 ${isScrolled ? 'opacity-100' : 'opacity-0'}`} />
-
+        <div
+          className={`absolute inset-x-0 top-full h-8 bg-gradient-to-b from-black/5 to-transparent pointer-events-none transition-opacity duration-300 ${isScrolled ? 'opacity-100' : 'opacity-0'}`}
+        />
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16 md:h-20">
             {/* Logo */}
             <Logo />
-
             {/* Desktop Menu & Dark Mode (Center Right) */}
             <div className="hidden md:flex items-center space-x-6">
               <DesktopMenu />
               <DarkModeToggle />
             </div>
-
             {/* --- Mobile Section (Right) --- */}
             <div className="flex md:hidden items-center space-x-4">
               {/* Dark Mode Toggle always visible on mobile header */}
               <DarkModeToggle />
 
               {/* --- Hamburger Icon - Animated --- */}
-              <AnimatePresence initial={false} onExitComplete={() => setIsAnimating(false)}> {/* initial=false prevents animation on initial load */}
+              <AnimatePresence initial={false} onExitComplete={() => setIsAnimating(false)}>
+                {' '}
+                {/* initial=false prevents animation on initial load */}
                 {!isMobileMenuOpen && ( // Only show if menu is NOT open
                   <motion.button
                     key="hamburger-button"
                     className={`relative z-50 p-2 -mr-2 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-200/50 dark:hover:bg-gray-800/50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500 ${isAnimating ? 'cursor-not-allowed' : ''} `} // <<< Style when disabled
                     onClick={handleOpenMenu} // Use handler
-                    disabled={isAnimating}   // Disable button
+                    disabled={isAnimating} // Disable button
                     aria-label="Open menu"
                     initial={{ opacity: 0, scale: 0.5, rotate: -90 }}
-                    animate={{ opacity: isAnimating ? 0.1 : 1, scale: 1, rotate: 0 }}
+                    animate={{
+                      opacity: isAnimating ? 0.1 : 1,
+                      scale: 1,
+                      rotate: 0,
+                    }}
                     exit={{ opacity: 0, scale: 0.5, rotate: -90 }}
-                    transition={{ duration: 0.15, ease: "easeOut" }}
+                    transition={{ duration: 0.15, ease: 'easeOut' }}
                     whileTap={{ scale: 0.9 }}
                     whileHover={{ scale: 1.1 }}
                   >
@@ -112,19 +121,20 @@ const NavBar = () => {
                   </motion.button>
                 )}
               </AnimatePresence>
-            </div> {/* End Mobile Section */}
-
-          </div> {/* End Flex Container */}
-        </div> {/* End Container */}
+            </div>{' '}
+            {/* End Mobile Section */}
+          </div>{' '}
+          {/* End Flex Container */}
+        </div>{' '}
+        {/* End Container */}
       </motion.header>
-
       {/* --- Mobile Menu Popover Component --- */}
       {/* Pass state down. AnimatePresence is handled INSIDE MobileMenu now */}
       <MobileMenu
         isOpen={isMobileMenuOpen}
         setIsOpen={setIsMobileMenuOpen}
-        isAnimating={isAnimating}      // Pass down isAnimating
-        setIsAnimating={setIsAnimating}  // Pass down setter
+        isAnimating={isAnimating} // Pass down isAnimating
+        setIsAnimating={setIsAnimating} // Pass down setter
       />
     </>
   );

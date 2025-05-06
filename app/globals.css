@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @custom-variant dark (&:where(.dark, .dark *));
 
@@ -26,9 +26,8 @@
   /* Custom animation definitions */
   --animation: {
     /* Corresponds to theme.extend.animation in v3 */
-    "accordion-down": "accordion-down 0.2s ease-out",
-    "accordion-up": "accordion-up 0.2s ease-out",
-     /* Add any other custom animations here */
+    "accordion-down":"accordion-down0.2sease-out","accordion-up": 'accordion-up 0.2s ease-out';
+    /* Add any other custom animations here */
   };
 
   /* Custom backdrop blur values */
@@ -47,17 +46,17 @@
   /* The .container class itself would likely still apply centering/max-width */
   /* based on screen sizes defined elsewhere or default */
   --padding: {
-     /* Default padding for the container might be set like this */
-     /* This is just an example, syntax might vary slightly */
-     DEFAULT: '1rem', 
-     /* You could potentially define screen-specific padding vars too */
-     /* sm: '2rem', */
-     /* lg: '4rem', */
+    /* Default padding for the container might be set like this */
+    /* This is just an example, syntax might vary slightly */
+    default: '1rem';
+    /* You could potentially define screen-specific padding vars too */
+    /* sm: '2rem', */
+    /* lg: '4rem', */
   };
 
-   /* Example: Defining screens (corresponds to theme.screens) */
-   /* This affects media queries for responsive utilities like md:flex */
-   --screens: {
+  /* Example: Defining screens (corresponds to theme.screens) */
+  /* This affects media queries for responsive utilities like md:flex */
+  --screens: {
       sm: '640px',
       md: '768px',
       lg: '1024px',
@@ -72,8 +71,8 @@
   --font-family: { ... };
   etc.
   */
+;
 }
-
 
 /* 
   =====================================================
@@ -83,15 +82,26 @@
   They correspond to theme.extend.keyframes in v3.
 */
 @keyframes accordion-down {
-  from { height: 0; opacity: 0; }
-  to { height: var(--radix-accordion-content-height); opacity: 1; } /* Example using Radix variable */
+  from {
+    height: 0;
+    opacity: 0;
+  }
+  to {
+    height: var(--radix-accordion-content-height);
+    opacity: 1;
+  } /* Example using Radix variable */
 }
 
 @keyframes accordion-up {
-  from { height: var(--radix-accordion-content-height); opacity: 1; } /* Example using Radix variable */
-  to { height: 0; opacity: 0; }
+  from {
+    height: var(--radix-accordion-content-height);
+    opacity: 1;
+  } /* Example using Radix variable */
+  to {
+    height: 0;
+    opacity: 0;
+  }
 }
-
 
 /* 
   =====================================================
@@ -105,7 +115,6 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-
 
 /* 
   Inject Tailwind's utility classes AFTER @theme definitions.

@@ -1,5 +1,5 @@
 // components/layout/DesktopMenu.tsx
-"use client";
+'use client';
 
 import Link from 'next/link';
 import { motion } from 'framer-motion';
@@ -23,7 +23,7 @@ const navItemVariants = {
     opacity: 1,
     y: 0,
     transition: { type: 'spring', stiffness: 120, damping: 10 },
-   },
+  },
 };
 
 const DesktopMenu = () => {
@@ -50,10 +50,7 @@ const NavItem = ({ item, isActive }: { item: MenuItem; isActive: boolean }) => {
   const [isHovered, setIsHovered] = React.useState(false);
 
   return (
-    <motion.div
-      onHoverStart={() => setIsHovered(true)}
-      onHoverEnd={() => setIsHovered(false)}
-    >
+    <motion.div onHoverStart={() => setIsHovered(true)} onHoverEnd={() => setIsHovered(false)}>
       <Link
         href={item.href}
         className="relative group px-2 py-1 text-sm lg:text-base font-medium text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors duration-200"
